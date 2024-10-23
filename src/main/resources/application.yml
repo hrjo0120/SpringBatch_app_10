@@ -29,7 +29,7 @@ logging:
     org.hibernate.type.descriptor.sql : trace
 custom:
   site:
-    name: ??
+    name: TMS
     baseUrl: "http://localhost:8010"
 
 #  application.yml => ?? ??
