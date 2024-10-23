@@ -21,8 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
+@AutoConfigureMockMvc // MockMVC 설정 / MockMVC == 실제 웹 서버를 띄우지 않아도 HTTP 요청을 흉내내서 컨트롤러 메서드를 실행 ==  톰캣이나 다른 서버를 실행시키지 않아도 된다.
+@Transactional // 테스트 메소드가 끝나면 다시 롤백
 @ActiveProfiles("test")
 public class MemberControllerTests {
     @Autowired
@@ -35,14 +35,14 @@ public class MemberControllerTests {
     void t1() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
-                .perform(get("/member/join"))
+                .perform(get("/member/join"))   // member/join GET 요청 -> 폼 내놔
                 .andDo(print());
         // THEN
         resultActions
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(handler().handlerType(MemberController.class))
-                .andExpect(handler().methodName("showJoin"))
-                .andExpect(content().string(containsString("회원가입")));
+                .andExpect(status().is2xxSuccessful())  // 성공(200번대)했는지? 내가 반환받은 결과가 200번대인지 확인, 성공으로 끝났는지 실패인지 알려줌
+                .andExpect(handler().handlerType(MemberController.class))   // 요청을 Member Controller가 처리했는지?
+                .andExpect(handler().methodName("showJoin"))    // 실행 된 method가 showJoin인지?
+                .andExpect(content().string(containsString("회원가입")));   // 해당 페이지에 "회원가입" 텍스트가 있는지?
     }
 
     @Test
@@ -50,19 +50,19 @@ public class MemberControllerTests {
     void t2() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
-                .perform(post("/member/join")
-                        .with(csrf())
-                        .param("username", "user999")
+                .perform(post("/member/join")   // member/join POST 요청 해
+                        .with(csrf())   // csrf 토큰을 추가해서 보안 검증 통과
+                        .param("username", "user999")   // 파라미터로 넘기겠다. 회원가입 데이터임( 밑 3줄)
                         .param("password", "1234")
                         .param("email", "user999@test.com")
                 )
                 .andDo(print());
         // THEN
         resultActions
-                .andExpect(status().is3xxRedirection())
+                .andExpect(status().is3xxRedirection()) // 리다이렉션(300번대)이 되었는지?
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("join"))
-                .andExpect(redirectedUrlPattern("/member/login?msg=**"));
-        assertThat(memberService.findByUsername("user999").isPresent()).isTrue();
+                .andExpect(redirectedUrlPattern("/member/login?msg=**"));   // 리다이렉트 URL 패턴이 "/member/login?msg=**" 형식인지?
+        assertThat(memberService.findByUsername("user999").isPresent()).isTrue();   //memberService.findByUsername("user999").isPresent() : memberSerivice에서 user999를 찾았을 때 존재하니? 가 True 인지
     }
 }
