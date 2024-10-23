@@ -2,7 +2,7 @@ package com.koreait.exam.springbatch_10_app.app.member.controller;
 
 import com.koreait.exam.springbatch_10_app.util.Ut;
 import lombok.RequiredArgsConstructor;
-import com.koreait.exam.springbatch_10_app.app.member.MemberService;
+import com.koreait.exam.springbatch_10_app.app.member.service.MemberService;
 import com.koreait.exam.springbatch_10_app.app.member.form.JoinForm;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;

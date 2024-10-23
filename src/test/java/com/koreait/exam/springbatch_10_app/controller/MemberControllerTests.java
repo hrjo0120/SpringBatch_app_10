@@ -1,6 +1,6 @@
 package com.koreait.exam.springbatch_10_app.controller;
 
-import com.koreait.exam.springbatch_10_app.app.member.MemberService;
+import com.koreait.exam.springbatch_10_app.app.member.service.MemberService;
 import com.koreait.exam.springbatch_10_app.app.member.controller.MemberController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

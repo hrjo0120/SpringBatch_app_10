@@ -1,4 +1,4 @@
-package com.koreait.exam.springbatch_10_app.app.member;
+package com.koreait.exam.springbatch_10_app.app.member.service;
 
 import com.koreait.exam.springbatch_10_app.app.member.entity.Member;
 import com.koreait.exam.springbatch_10_app.app.member.exception.AlreadyJoinException;
