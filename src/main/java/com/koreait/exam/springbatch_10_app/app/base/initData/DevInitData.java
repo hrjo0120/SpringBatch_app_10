@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+// 개발 환경에서 실행됨
 @Configuration
 @Profile("dev")
 public class DevInitData implements InitDataBefore {
