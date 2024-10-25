@@ -5,28 +5,54 @@
 </head>
 <main layout:fragment="main">
     <script src="https://js.tosspayments.com/v1"></script>
+
     <script th:inline="javascript">
         const orderId = /*[[${order.id}]]*/ null;
         const buyerName = /*[[${order.buyer.name}]]*/ null;
         const orderName = /*[[${order.name}]]*/ null;
         const orderPayPrice = /*[[${order.calculatePayPrice}]]*/ null;
     </script>
+
     <script>
         const tossPayments = TossPayments("payments 개발자센터 -> 내 개발 정보 -> API 개별 연동 키 -> 클라이언트 키");
 
         function payment() {
+            const $PaymentForm__useRestCash = $('#PaymentForm__useRestCash');
+            let useRestCash = parseInt($PaymentForm__useRestCash.val());
+            if (useRestCash == NaN) {
+                useRestCash = 0;
+            }
+            const minUseRestCash = parseInt($PaymentForm__useRestCash.attr('min'));
+            const maxUseRestCash = parseInt($PaymentForm__useRestCash.attr('max'));
+            // console.log(useRestCash);
+            // console.log(minUseRestCash);
+            // console.log(maxUseRestCash);
+            if (useRestCash > maxUseRestCash) {
+                useRestCash = maxUseRestCash;
+                $PaymentForm__useRestCash.val(maxUseRestCash);
+            }
+            if (orderPayPrice == useRestCash) {
+                document.payByRestCashOnlyForm.submit();
+                return;
+            }
+
             const method = "카드"; // 카드 or 가상계좌
+
             const paymentData = {
-                amount: orderPayPrice,
+                amount: orderPayPrice - useRestCash,
                 orderId: "order__" + orderId + "__" + (Math.random() + "").substring(2),
                 orderName,
                 customerName: buyerName,
                 successUrl: window.location.origin + "/order/" + orderId + "/success",
                 failUrl: window.location.origin + "/order/" + orderId + "/fail",
             };
+
             tossPayments.requestPayment(method, paymentData);
         }
     </script>
+
+    <form hidden action="POST" name="payByRestCashOnlyForm" th:action="@{|/order/${order.id}/payByRestCashOnly|}">
+    </form>
 
     <section class="section flex-grow flex flex-col items-center justify-center">
         <div class="max-w-md w-full px-2 pt-4">
@@ -43,8 +69,15 @@
                 아티스트 : [[${orderItem.product.author.username}]]
                 가격 : [[${orderItem.salePrice}]]
             </div>
-            <div>
-                <button onclick="payment()" class="btn btn-sm btn-primary">결제하기</button>
+            <div class="mt-3">
+                <div>보유 예치금 : [[${actorRestCash}]]</div>
+                <div>
+                    <input id="PaymentForm__useRestCash" type="number" placeholder="사용할 예치금" min="0"
+                           th:max="${order.calculatePayPrice > actorRestCash ? actorRestCash : order.calculatePayPrice}"
+                           class="input input-bordered min-w-[300px]">
+                </div>
+                <button th:if="${order.payable}" onclick="payment()" class="mt-3 btn btn-sm btn-primary">결제하기</button>
+                <button th:if="${order.isPaid}" class="btn btn-sm btn-secondary mt-3 ">결제완료</button>
             </div>
         </div>
     </section>

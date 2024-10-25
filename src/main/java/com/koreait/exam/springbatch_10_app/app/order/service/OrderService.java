@@ -87,7 +87,7 @@ public class OrderService {
         return actor.getId().equals(order.getBuyer().getId());
     }
 
-    @Transactional//////// 얘 때문이었음......
+    @Transactional
     public void payByTossPayments(Order order) {
         Member buyer = order.getBuyer();
         int payPrice = order.calculatePayPrice();
