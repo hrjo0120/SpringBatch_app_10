@@ -22,11 +22,15 @@ public class CustomUserDetailsService implements UserDetailsService { // 사용�
     // final이 붙으면, 객체는 불변성을 가진다.
     private final MemberRepository memberRepository;
 
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByUsername(username).get();
         List<GrantedAuthority> authorities = new ArrayList<>();
+
+        if (member.getUsername().equals("user1")) {
+            authorities.add(new SimpleGrantedAuthority("ADMIN"));
+        }
+
         authorities.add(new SimpleGrantedAuthority("MEMBER")); // GrantedAuthority: MEMBER 권한을 부여, 권한 객체는 SimpleGrantedAuthority , 권한 정보를 담고있음, 권한 상태를 나타냄
         return new MemberContext(member, authorities);  // 무슨 권한을 가지고 있는지 한번에 나타냄
     }
